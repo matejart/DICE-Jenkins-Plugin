@@ -1,0 +1,3 @@
+hudson.tasks.junit
+hudson.tasks.test
+hudson.tasks.test.helper
