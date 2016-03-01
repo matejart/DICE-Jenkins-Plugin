@@ -44,104 +44,122 @@ import org.apache.tools.ant.DirectoryScanner;
 @Extension
 public class JUnitParser extends TestResultParser {
 
-    private final boolean keepLongStdio;
-    private final boolean allowEmptyResults;
+	private final boolean keepLongStdio;
+	private final boolean allowEmptyResults;
 
-    /** TODO TestResultParser.all does not seem to ever be called so why must this be an Extension? */
-    @Deprecated
-    public JUnitParser() {
-        this(false, false);
-    }
+	/**
+	 * TODO TestResultParser.all does not seem to ever be called so why must
+	 * this be an Extension?
+	 */
+	@Deprecated
+	public JUnitParser() {
+		this(false, false);
+	}
 
-    /**
-     * @param keepLongStdio if true, retain a suite's complete stdout/stderr even if this is huge and the suite passed
-     * @since 1.358
-     */
-    @Deprecated
-    public JUnitParser(boolean keepLongStdio) {
-        this.keepLongStdio = keepLongStdio;
-        this.allowEmptyResults = false;
-    }
+	/**
+	 * @param keepLongStdio
+	 *            if true, retain a suite's complete stdout/stderr even if this
+	 *            is huge and the suite passed
+	 * @since 1.358
+	 */
+	@Deprecated
+	public JUnitParser(boolean keepLongStdio) {
+		this.keepLongStdio = keepLongStdio;
+		this.allowEmptyResults = false;
+	}
 
-    /**
-     * @param keepLongStdio if true, retain a suite's complete stdout/stderr even if this is huge and the suite passed
-     * @param allowEmptyResults if true, empty results are allowed
-     * @since 1.10
-     */
-    public JUnitParser(boolean keepLongStdio, boolean allowEmptyResults) {
-        this.keepLongStdio = keepLongStdio;
-        this.allowEmptyResults = allowEmptyResults;
-    }
+	/**
+	 * @param keepLongStdio
+	 *            if true, retain a suite's complete stdout/stderr even if this
+	 *            is huge and the suite passed
+	 * @param allowEmptyResults
+	 *            if true, empty results are allowed
+	 * @since 1.10
+	 */
+	public JUnitParser(boolean keepLongStdio, boolean allowEmptyResults) {
+		this.keepLongStdio = keepLongStdio;
+		this.allowEmptyResults = allowEmptyResults;
+	}
 
-    @Override
-    public String getDisplayName() {
-        return Messages.JUnitParser_DisplayName();
-    }
+	@Override
+	public String getDisplayName() {
+		return Messages.JUnitParser_DisplayName();
+	}
 
-    @Override
-    public String getTestResultLocationMessage() {
-        return Messages.JUnitParser_TestResultLocationMessage();
-    }
+	@Override
+	public String getTestResultLocationMessage() {
+		return Messages.JUnitParser_TestResultLocationMessage();
+	}
 
-    @Deprecated
-    @Override public TestResult parse(String testResultLocations, AbstractBuild build, Launcher launcher, TaskListener listener) throws InterruptedException, IOException {
-        return (TestResult) super.parse(testResultLocations, build, launcher, listener);
-    }
+	@Deprecated
+	@Override
+	public TestResult parse(String testResultLocations, AbstractBuild build, Launcher launcher, TaskListener listener)
+			throws InterruptedException, IOException {
+		return (TestResult) super.parse(testResultLocations, build, launcher, listener);
+	}
 
-    @Override
-    public TestResult parseResult(String testResultLocations,
-                                       Run<?,?> build, FilePath workspace, Launcher launcher,
-                                       TaskListener listener)
-            throws InterruptedException, IOException
-    {
-        final long buildTime = build.getTimestamp().getTimeInMillis();
-        final long timeOnMaster = System.currentTimeMillis();
+	/**
+	 * Returns a {@link TestResult} object based on the parameters.
+	 * 
+	 * @param testResultLocations			Location(s) of the (JUnit) test results.
+	 * @param build							The build for which to display the results.
+	 * @param workspace						The project workspace.
+	 * @param launcher						
+	 * @param listener						
+	 */
+	@Override
+	public TestResult parseResult(String testResultLocations, Run<?, ?> build, FilePath workspace, Launcher launcher,
+			TaskListener listener) throws InterruptedException, IOException {
+		final long buildTime = build.getTimestamp().getTimeInMillis();
+		final long timeOnMaster = System.currentTimeMillis();
 
-        // [BUG 3123310] TODO - Test Result Refactor: review and fix TestDataPublisher/TestAction subsystem]
-        // also get code that deals with testDataPublishers from JUnitResultArchiver.perform
+		// [BUG 3123310] TODO - Test Result Refactor: review and fix
+		// TestDataPublisher/TestAction subsystem]
+		// also get code that deals with testDataPublishers from
+		// JUnitResultArchiver.perform
 
-        return workspace.act(new ParseResultCallable(testResultLocations, buildTime,
-                                                     timeOnMaster, keepLongStdio, allowEmptyResults));
-    }
+		return workspace.act(new ParseResultCallable(testResultLocations, buildTime, timeOnMaster, keepLongStdio,
+				allowEmptyResults));
+	}
 
-    private static final class ParseResultCallable extends MasterToSlaveFileCallable<TestResult> {
-        private final long buildTime;
-        private final String testResults;
-        private final long nowMaster;
-        private final boolean keepLongStdio;
-        private final boolean allowEmptyResults;
+	private static final class ParseResultCallable extends MasterToSlaveFileCallable<TestResult> {
+		private final long buildTime;
+		private final String testResults;
+		private final long nowMaster;
+		private final boolean keepLongStdio;
+		private final boolean allowEmptyResults;
 
-        private ParseResultCallable(String testResults, long buildTime, long nowMaster,
-                                    boolean keepLongStdio, boolean allowEmptyResults) {
-            this.buildTime = buildTime;
-            this.testResults = testResults;
-            this.nowMaster = nowMaster;
-            this.keepLongStdio = keepLongStdio;
-            this.allowEmptyResults = allowEmptyResults;
-        }
+		private ParseResultCallable(String testResults, long buildTime, long nowMaster, boolean keepLongStdio,
+				boolean allowEmptyResults) {
+			this.buildTime = buildTime;
+			this.testResults = testResults;
+			this.nowMaster = nowMaster;
+			this.keepLongStdio = keepLongStdio;
+			this.allowEmptyResults = allowEmptyResults;
+		}
 
-        public TestResult invoke(File ws, VirtualChannel channel) throws IOException {
-            final long nowSlave = System.currentTimeMillis();
+		public TestResult invoke(File ws, VirtualChannel channel) throws IOException {
+			final long nowSlave = System.currentTimeMillis();
 
-            FileSet fs = Util.createFileSet(ws, testResults);
-            DirectoryScanner ds = fs.getDirectoryScanner();
-            TestResult result = null;
+			FileSet fs = Util.createFileSet(ws, testResults);
+			DirectoryScanner ds = fs.getDirectoryScanner();
+			TestResult result = null;
 
-            String[] files = ds.getIncludedFiles();
-            if (files.length > 0) {
-                result = new TestResult(buildTime + (nowSlave - nowMaster), ds, keepLongStdio);
-                result.tally();
-            } else {
-                if (this.allowEmptyResults) {
-                    result = new TestResult();
-                } else {
-                    // no test result. Most likely a configuration
-                    // error or fatal problem
-                    throw new AbortException(Messages.JUnitResultArchiver_NoTestReportFound());
-                }
-            }
-            return result;
-        }
-    }
+			String[] files = ds.getIncludedFiles();
+			if (files.length > 0) {
+				result = new TestResult(buildTime + (nowSlave - nowMaster), ds, keepLongStdio);
+				result.tally();
+			} else {
+				if (this.allowEmptyResults) {
+					result = new TestResult();
+				} else {
+					// no test result. Most likely a configuration
+					// error or fatal problem
+					throw new AbortException(Messages.JUnitResultArchiver_NoTestReportFound());
+				}
+			}
+			return result;
+		}
+	}
 
 }
