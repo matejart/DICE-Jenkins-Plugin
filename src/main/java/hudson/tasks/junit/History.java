@@ -107,7 +107,11 @@ public class History {
 	 *         interval between start and end.
 	 */
 	public List<TestResult> getList(int start, int end) {
+
 		List<TestResult> list = new ArrayList<TestResult>();
+
+		// ensure the provided last build number is not bigger than the number
+		// of all available builds
 		end = Math.min(end, testObject.getRun().getParent().getBuilds().size());
 
 		// for each Run in testObject, save its TestResult in a list
@@ -138,7 +142,7 @@ public class History {
 	 *         represents the duration of tests over time.
 	 */
 	public Graph getDurationGraph() {
-		return new GraphImpl("Tests duration (seconds)") {
+		return new GraphImpl("Tests duration  (seconds)") {
 
 			protected DataSetBuilder<String, ChartLabel> createDataSet() {
 				DataSetBuilder<String, ChartLabel> data = new DataSetBuilder<String, ChartLabel>();
@@ -207,7 +211,7 @@ public class History {
 	 */
 	public Graph getLatencyGraph() {
 
-		return new GraphImpl("Test latency (seconds)") {
+		return new GraphImpl("Test latency (miliseconds)") {
 
 			protected DataSetBuilder<String, ChartLabel> createDataSet() {
 
@@ -218,8 +222,7 @@ public class History {
 				List<TestResult> list;
 				try {
 					// Stapler maps an HTTP request to a method call / JSP
-					// invocation against a model object by evaluating the
-					// request URL in a EL-ish way.
+					// invocation against a model object.
 					list = getList(Integer.parseInt(Stapler.getCurrentRequest().getParameter("start")),
 							Integer.parseInt(Stapler.getCurrentRequest().getParameter("end")));
 				} catch (NumberFormatException e) {
@@ -231,7 +234,7 @@ public class History {
 				 * build duration (tests included))
 				 */
 				for (hudson.tasks.test.TestResult o : list) {
-					data.add(((double) o.getDuration()) / (1000), "", new ChartLabel(o) {
+					data.add(((double) o.getDuration()) * 1000, "", new ChartLabel(o) {
 						@Override
 						public Color getColor() {
 							if (o.getFailCount() > 0)
@@ -242,6 +245,7 @@ public class History {
 								return ColorPalette.BLUE;
 						}
 					});
+					
 				}
 
 				return data;

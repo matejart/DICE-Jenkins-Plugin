@@ -103,7 +103,7 @@ public class JUnitParser extends TestResultParser {
 	 * 
 	 * @param testResultLocations			Location(s) of the (JUnit) test results.
 	 * @param build							The build for which to display the results.
-	 * @param workspace						The project workspace.
+	 * @param workspace						The project workspace (FilePath).
 	 * @param launcher						
 	 * @param listener						
 	 */
