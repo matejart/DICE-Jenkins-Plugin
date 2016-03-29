@@ -58,10 +58,3 @@ function setLatency() {
   	<a id="latency-link" href="#" onclick='javascript:setLatency()'> latency </a>
 </div>
 ```
-
-
-
-## License
-
-
-
