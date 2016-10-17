@@ -3,5 +3,7 @@
   This view is used to render the installed plugins page.
 -->
 <div>
-  This plugin is a sample to explain how to write a Jenkins plugin.
+  This DICE plugin collects results from DICE Quality Testing and
+  stores them in the build project. The history of the builds'
+  quality can be viewed as a chart or a table.
 </div>
