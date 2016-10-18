@@ -28,7 +28,6 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
 
 import java.io.IOException;
 
-import org.jenkinsci.plugins.discardbuild.DiceRulesPublisher;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.Extension;

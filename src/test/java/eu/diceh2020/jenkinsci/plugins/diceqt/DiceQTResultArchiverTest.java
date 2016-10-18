@@ -26,8 +26,64 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mockito.ArgumentCaptor;
+
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.BuildListener;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.*;
+import hudson.model.TaskListener;
+import hudson.util.RunList;
 import junit.framework.TestCase;
+
+import static org.mockito.Mockito.*;
 
 public class DiceQTResultArchiverTest extends TestCase {
 
+	private Launcher launcher = mock(Launcher.class);
+	private PrintStream logger = mock(PrintStream.class);
+	private BuildListener listener = mock(BuildListener.class);
+	private FreeStyleBuild build = mock(FreeStyleBuild.class);
+	private FreeStyleProject job = mock(FreeStyleProject.class);
+	private Run<?, ?> run = mock(Run.class);
+	private List<FreeStyleBuild> buildList = new ArrayList<FreeStyleBuild>();
+
+	public void setUp() throws Exception {
+		when(listener.getLogger()).thenReturn(logger);
+		when(job.getBuilds()).thenReturn(RunList.fromRuns(buildList));
+		when(build.getParent()).thenReturn(job);
+	}
+	
+	public void testPerform() throws Exception {
+		DiceQTResultArchiver archiver = this.getArchiver(
+				new DiceQTResultArchiver(""));
+		File tmpFile = File.createTempFile("unittest", "dice");
+		tmpFile.deleteOnExit();
+		FilePath workspace = new FilePath(tmpFile);
+		
+		archiver.perform((Run<?, ?>) run, workspace, launcher, listener);
+		
+		ArgumentCaptor<DiceAction> actionArgument = ArgumentCaptor.forClass(
+				DiceAction.class);
+		verify(run).addAction(actionArgument.capture());
+		assertEquals(55.4, actionArgument.getValue().getLatency());
+	}
+	
+	private DiceQTResultArchiver getArchiver(DiceQTResultArchiver archiver)
+			throws Exception {
+		
+		DiceQTResultArchiver spy = spy(archiver);
+		
+		return spy;
+	}
 }
