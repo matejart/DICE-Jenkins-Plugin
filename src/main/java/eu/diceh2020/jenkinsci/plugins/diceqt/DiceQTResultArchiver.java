@@ -26,7 +26,11 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -91,23 +95,49 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
 			throws InterruptedException, IOException {
 		
-		listener.getLogger().println("Nekaj dela.");
-		
-		double latency = 55.4;
-		
+		PrintStream logger = listener.getLogger();
+		logger.println(String.format(
+				"Collecting the quality metrics data from %s.",
+				this.pathToResults));
+
+		// compose a FilePath to point to results file: a combination
+		// of workspace and the configuration parameter of the plugin
+		FilePath resultsFilePath = new FilePath(workspace,
+				this.pathToResults);
+
+		Hashtable<String, Number> metrics = MetricsJsonParser
+				.parse(resultsFilePath);
+
+		if (metrics == null) {
+			throw new FileNotFoundException(String.format(
+					"The metrics file %s not found. The program "
+					+ "called by the job didn't output any results?",
+					this.pathToResults));
+		}
+
+		Enumeration<String> emetrics = metrics.keys();
+		if (emetrics.hasMoreElements()) {
+			logger.println("Obtained performance metrics:");
+			while (emetrics.hasMoreElements()) {
+				String metric = emetrics.nextElement();
+				logger.println(String.format(" - %s: %f",
+						metric, metrics.get(metric)));
+			}
+		} else {
+			logger.println("Obtained an EMPTY performance metrics file.");
+		}
+
+		// Save the results with the job
 		DiceAction action = run.getAction(DiceAction.class);
 		boolean appending;
 		if (action == null) {
-			action = new DiceAction(latency);
+			action = new DiceAction(metrics);
 			appending = false;
 		} else {
-			action.setLatency(latency);
+			action.setMetrics(metrics);
 			appending = true;
 		}
 		
-		listener.getLogger().println(String.format("Performance metric latency: %f",
-				latency));
-
 		if (appending) {
 			run.save();
 		} else {
@@ -130,6 +160,7 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
      * This class provides a link with the
      * <tt>src/main/resources/eu.diceh2020.jenkinsci.plugins.diceqt.DiceQTResultArchiver/*.jelly</tt>
      * to generate the actual HTML contents in the configuration views.
+     * It needs to be decorated with {@code Extension}.
      */
 	@Extension
 	public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
@@ -142,6 +173,5 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		public String getDisplayName() {
 			return "DICE's Quality check";
 		}
-		
 	}
 }

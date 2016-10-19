@@ -26,14 +26,13 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.StringWriter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -83,7 +82,8 @@ public class MetricsJsonParserTest {
 		Hashtable<String, Number>  expected = new Hashtable<String, Number>();
 		expected.put("latency", 123.55);
 		
-		FilePath pathSingleEntry = this.createTemporaryFile(fileContent);
+		FilePath pathSingleEntry = Utilities.createTemporaryFile(
+				fileContent);
 
 		Dictionary<String, Number> results =
 				MetricsJsonParser.parse(pathSingleEntry);
@@ -108,7 +108,8 @@ public class MetricsJsonParserTest {
 		expected.put("throughput", 0.0031);
 		expected.put("time", 500.0);
 		
-		FilePath pathMultipleEntries = this.createTemporaryFile(fileContent);
+		FilePath pathMultipleEntries = Utilities.createTemporaryFile(
+				fileContent);
 
 		Dictionary<String, Number> results =
 				MetricsJsonParser.parse(pathMultipleEntries);
@@ -132,27 +133,10 @@ public class MetricsJsonParserTest {
 				+ "'bla': { 'subkey1': 200 }"
 				+ "}";
 		
-		FilePath pathBadInput = this.createTemporaryFile(fileContent);
+		FilePath pathBadInput = Utilities.createTemporaryFile(
+				fileContent);
 		
 		thrown.expect(JSONException.class);
 		MetricsJsonParser.parse(pathBadInput);
-	}
-	
-	private FilePath createTemporaryFile(String fileContent)
-			throws IOException {
-		File tmpFile = File.createTempFile("diceci-", ".json");
-		tmpFile.deleteOnExit();
-		
-		FileOutputStream fout = new FileOutputStream(tmpFile);
-		OutputStreamWriter stream = new OutputStreamWriter(fout);
-		
-		stream.write(fileContent);
-		
-		stream.close();
-		fout.close();
-		
-		FilePath retval = new FilePath(tmpFile);
-		
-		return retval;
 	}
 }

@@ -26,13 +26,11 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.json.*;
+import org.json.JSONObject;
 
 import hudson.FilePath;
 
@@ -57,7 +55,7 @@ public class MetricsJsonParser {
 	 * remoting operations
 	 * @throws IOException 
 	 */
-	public static Dictionary<String, Number> parse(FilePath filePath) 
+	public static Hashtable<String, Number> parse(FilePath filePath) 
 			throws IOException, InterruptedException {
 
 		if (!filePath.exists()) {
@@ -66,7 +64,7 @@ public class MetricsJsonParser {
 		
 		String jsonSource = filePath.readToString();
 	
-		Dictionary<String, Number> retval = 
+		Hashtable<String, Number> retval = 
 				new Hashtable<String, Number>();
 		
 		if (jsonSource.trim().isEmpty()) {

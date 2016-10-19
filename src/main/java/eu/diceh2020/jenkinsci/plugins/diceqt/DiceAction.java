@@ -26,13 +26,16 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import hudson.model.Action;
 
 public class DiceAction implements Action {
-	private double latency = 0.0;
+	private Hashtable<String, Number> metrics = null;
 
-	public DiceAction(double latency) {
-		this.latency = latency;
+	public DiceAction(Hashtable<String, Number> metrics) {
+		this.metrics = this.clone(metrics);
 	}
 	
 	@Override
@@ -50,12 +53,22 @@ public class DiceAction implements Action {
 		return "diceReport";
 	}
 	
-	public double getLatency() {
-		return this.latency;
+	public Hashtable<String, Number> getMetrics() {
+		return this.clone(this.metrics);
 	}
 	
-	public void setLatency(double latency) {
-		this.latency = latency;
+	public void setMetrics(Hashtable<String, Number> metrics) {
+		this.metrics = this.clone(metrics);
+	}
+	
+	private Hashtable<String, Number> clone(Hashtable<String, Number> input) {
+		Hashtable<String, Number> retval = new Hashtable<String, Number>();
+		Enumeration<String> en = input.keys();
+		while (en.hasMoreElements()) {
+			String key = en.nextElement();
+			retval.put(key, input.get(key));
+		}
+		return retval;
 	}
 
 }
