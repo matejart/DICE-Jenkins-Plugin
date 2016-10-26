@@ -1,0 +1,19 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+         xmlns:l="/lib/layout">
+  <l:layout norefresh="true">
+    <st:include it="${it.build}" page="sidepanel.jelly"/>
+    <l:main-panel>
+      <h1>DICE!</h1>
+      <table>
+        <j:set var="metrics" value="${it.getMetrics()}"/>
+        <j:forEach var="metric" items="${metrics.keys()}">
+          <tr>
+            <td>${metric}</td>
+            <td>${metrics.get(metric)}</td>
+          </tr>
+        </j:forEach>
+      </table>
+      <p>Build: ${it.build.getClass()}</p>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

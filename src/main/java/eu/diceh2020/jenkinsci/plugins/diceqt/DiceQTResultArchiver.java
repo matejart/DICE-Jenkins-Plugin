@@ -37,7 +37,10 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
+import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -45,9 +48,10 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.tasks.junit.*;
+import hudson.util.RunList;
 import jenkins.tasks.SimpleBuildStep;
 
-import eu.diceh2020.jenkinsci.plugins.diceqt.DiceAction;
+import eu.diceh2020.jenkinsci.plugins.diceqt.*;
 
 /***
  * The {@code DiceQTResultArchiver} implements collecting of the data placed in
@@ -88,6 +92,12 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		return BuildStepMonitor.NONE;
 	}
 	
+	@Override
+	public Action getProjectAction(AbstractProject<?, ?> project) {
+		return new DiceQTResultProjectAction(project, "bla",
+				new String[] { "bla" });
+	}
+
 	/**
 	 * This method gets called in Jenkins after a build.
 	 */
@@ -99,6 +109,12 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		logger.println(String.format(
 				"Collecting the quality metrics data from %s.",
 				this.pathToResults));
+		if (run == null) {
+			logger.println("Run is null.");
+		} else {
+			logger.println(String.format("class: %s, build status usr: %s",
+					run.getClass().getName(), run.getBuildStatusUrl()));
+		}
 
 		// compose a FilePath to point to results file: a combination
 		// of workspace and the configuration parameter of the plugin
@@ -128,10 +144,11 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		}
 
 		// Save the results with the job
-		DiceAction action = run.getAction(DiceAction.class);
+		DiceQTResultBuildAction action = run.getAction(DiceQTResultBuildAction.class);
 		boolean appending;
 		if (action == null) {
-			action = new DiceAction(metrics);
+			AbstractBuild<?, ?> build = this.getBuild(run);
+			action = new DiceQTResultBuildAction(build, metrics);
 			appending = false;
 		} else {
 			action.setMetrics(metrics);
@@ -143,6 +160,10 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		} else {
 			run.addAction(action);
 		}
+	}
+
+	public AbstractBuild<?, ?> getBuild(Run<?, ?> run) {
+		return (AbstractBuild<?, ?>)run;
 	}
 
 	/**

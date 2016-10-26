@@ -1,0 +1,12 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+         xmlns:l="/lib/layout">
+  <l:layout title="trendlayout" css="/plugin/appdynamics-dashboard/css/style.css">
+    <st:include it="${it.project}" page="sidepanel.jelly"/>
+    <l:main-panel>
+      <h1>Trend.</h1>
+      <div>
+        <a href="../lastBuild/diceHistory/">naslov</a>
+      </div>
+    </l:main-panel>
+  </l:layout>
+</j:jelly>

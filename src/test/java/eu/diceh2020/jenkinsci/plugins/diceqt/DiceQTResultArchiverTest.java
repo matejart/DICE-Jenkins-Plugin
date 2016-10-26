@@ -51,6 +51,7 @@ import hudson.model.*;
 import hudson.model.TaskListener;
 import hudson.util.RunList;
 import junit.framework.TestCase;
+import eu.diceh2020.jenkinsci.plugins.diceqt.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -88,8 +89,8 @@ public class DiceQTResultArchiverTest {
 		
 		archiver.perform((Run<?, ?>) run, workspace, launcher, listener);
 		
-		ArgumentCaptor<DiceAction> actionArgument = ArgumentCaptor.forClass(
-				DiceAction.class);
+		ArgumentCaptor<DiceQTResultBuildAction> actionArgument = ArgumentCaptor.forClass(
+				DiceQTResultBuildAction.class);
 		verify(run).addAction(actionArgument.capture());
 		assertEquals(expected, actionArgument.getValue().getMetrics());
 	}
@@ -131,8 +132,8 @@ public class DiceQTResultArchiverTest {
 		
 		archiver.perform((Run<?, ?>) run, workspace, launcher, listener);
 		
-		ArgumentCaptor<DiceAction> actionArgument = ArgumentCaptor.forClass(
-				DiceAction.class);
+		ArgumentCaptor<DiceQTResultBuildAction> actionArgument = ArgumentCaptor.forClass(
+				DiceQTResultBuildAction.class);
 		verify(run).addAction(actionArgument.capture());
 		assertEquals(expected, actionArgument.getValue().getMetrics());
 	}
@@ -141,6 +142,7 @@ public class DiceQTResultArchiverTest {
 			throws Exception {
 		
 		DiceQTResultArchiver spy = spy(archiver);
+		doReturn(null).when(spy).getBuild(any(Run.class));
 		
 		return spy;
 	}

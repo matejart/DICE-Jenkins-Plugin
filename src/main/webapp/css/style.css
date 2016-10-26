@@ -1,5 +1,3 @@
-package eu.diceh2020.jenkinsci.plugins.diceqt;
-
 /*-
  * #%L
  * DICE Jenkins plug-in
@@ -25,50 +23,3 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * THE SOFTWARE.
  * #L%
  */
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-
-import hudson.model.Action;
-
-public class DiceAction implements Action {
-	private Hashtable<String, Number> metrics = null;
-
-	public DiceAction(Hashtable<String, Number> metrics) {
-		this.metrics = this.clone(metrics);
-	}
-	
-	@Override
-	public String getIconFileName() {
-		return "clipboard.png";
-	}
-
-	@Override
-	public String getDisplayName() {
-		return "DICE report";
-	}
-
-	@Override
-	public String getUrlName() {
-		return "diceReport";
-	}
-	
-	public Hashtable<String, Number> getMetrics() {
-		return this.clone(this.metrics);
-	}
-	
-	public void setMetrics(Hashtable<String, Number> metrics) {
-		this.metrics = this.clone(metrics);
-	}
-	
-	private Hashtable<String, Number> clone(Hashtable<String, Number> input) {
-		Hashtable<String, Number> retval = new Hashtable<String, Number>();
-		Enumeration<String> en = input.keys();
-		while (en.hasMoreElements()) {
-			String key = en.nextElement();
-			retval.put(key, input.get(key));
-		}
-		return retval;
-	}
-
-}
