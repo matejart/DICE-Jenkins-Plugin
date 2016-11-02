@@ -46,7 +46,7 @@ public class MetricsJsonParser {
 	 * Parse the file indicated by the filePath parameter from a JSON
 	 * file. It expects a flat structure of key-value pairs with the
 	 * values being a numerical value. 
-	 * 
+	 *
 	 * @param filePath Describes location of the results file to be
 	 * parsed.
 	 * @return A dictionary of metric names and their values. If the
@@ -61,9 +61,25 @@ public class MetricsJsonParser {
 		if (!filePath.exists()) {
 			return null;
 		}
-		
+
 		String jsonSource = filePath.readToString();
+		Hashtable<String, Number> retval = parse(jsonSource);
+
+		return retval;
+	}
 	
+	/***
+	 * Parse the JSON source stored in the input string. The method
+	 * expects a flat structure of key-value pairs with the values
+	 * being a numerical value.
+	 *
+	 * @param jsonSource Contains a string representation of the JSON
+	 * to be parsed.
+	 * @return A dictionary of metric names and their values. If the
+	 * file doesn't exist, the return value is null.
+	 */
+	public static Hashtable<String, Number> parse(String jsonSource)
+	{
 		Hashtable<String, Number> retval = 
 				new Hashtable<String, Number>();
 		
@@ -80,7 +96,7 @@ public class MetricsJsonParser {
 			
 			retval.put(metric, value);
 		}
-
+		
 		return retval;
 	}
 }

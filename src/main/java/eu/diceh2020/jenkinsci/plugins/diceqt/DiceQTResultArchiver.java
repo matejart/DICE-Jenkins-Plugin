@@ -94,8 +94,7 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 	
 	@Override
 	public Action getProjectAction(AbstractProject<?, ?> project) {
-		return new DiceQTResultProjectAction(project, "bla",
-				new String[] { "bla" });
+		return new DiceQTResultProjectAction(project);
 	}
 
 	/**

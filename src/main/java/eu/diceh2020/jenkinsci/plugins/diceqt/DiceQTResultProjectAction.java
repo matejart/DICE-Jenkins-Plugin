@@ -26,19 +26,29 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
-import hudson.model.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.TreeSet;
 
+import antlr.collections.List;
+import hudson.model.*;
+import hudson.util.RunList;
+
+/***
+ * This class implements the view summarizing the whole project.
+ * It charts the performances across the history of application's
+ * builds.
+ *
+ * @author matej.artac@xlab.si
+ *
+ */
 public class DiceQTResultProjectAction implements Action {
 
 	private final AbstractProject<?, ?> project;
-	private final String mainMetricKey;
-	private final String[] allMetricKeys;
 
-	DiceQTResultProjectAction(final AbstractProject<?, ?> project,
-			final String mainMetricKey, final String[] allMetricKeys) {
+	DiceQTResultProjectAction(final AbstractProject<?, ?> project) {
 		this.project = project;
-		this.mainMetricKey = mainMetricKey;
-		this.allMetricKeys = allMetricKeys;
 	}
 	
 	@Override
@@ -64,5 +74,26 @@ public class DiceQTResultProjectAction implements Action {
 		return this.project;
 	}
 	
-	
+	/**
+	 * Extracts a merged list of metric names used in all
+	 * builds.
+	 * @return
+	 */
+	public ArrayList<String> getMetricNames() {
+		TreeSet<String> metricNames = new TreeSet<String>();
+		
+		RunList<?> buildList = this.project.getBuilds();
+		for (Run<?, ?> build : buildList) {
+			DiceQTResultBuildAction action = build.getAction(
+					DiceQTResultBuildAction.class);
+			Hashtable<String, Number> metrics =
+					action.getDiceQTResultHistory().getMetrics();
+			Enumeration<String> ekeys = metrics.keys();
+			while (ekeys.hasMoreElements()) {
+				metricNames.add(ekeys.nextElement());
+			}
+		}
+		
+		return new ArrayList<String>(metricNames);
+	}
 }
