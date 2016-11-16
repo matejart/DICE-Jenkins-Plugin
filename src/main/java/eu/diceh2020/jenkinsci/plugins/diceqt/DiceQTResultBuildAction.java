@@ -28,7 +28,6 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +51,7 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	public DiceQTResultBuildAction(AbstractBuild<?, ?> build, 
 			Hashtable<String, Number> metrics) {
 		this.build = build;
-		this.metrics = this.clone(metrics);
+		this.metrics = Utilities.clone(metrics);
 	}
 	
 	public AbstractBuild<?, ?> getBuild() {
@@ -75,11 +74,11 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	}
 
 	public Hashtable<String, Number> getMetrics() {
-		return this.clone(metrics);
+		return Utilities.clone(metrics);
 	}
 
 	public void setMetrics(Hashtable<String, Number> metrics) {
-		this.metrics = this.clone(metrics);
+		this.metrics = Utilities.clone(metrics);
 	}
 
 	@Override
@@ -111,15 +110,5 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	public void setDiceQTResultHistory(
 			WeakReference<DiceQTResultHistory> diceQTResultHistory) {
 		this.diceQTResultHistory = diceQTResultHistory;
-	}
-	
-	private Hashtable<String, Number> clone(Hashtable<String, Number> input) {
-		Hashtable<String, Number> retval = new Hashtable<String, Number>();
-		Enumeration<String> en = input.keys();
-		while (en.hasMoreElements()) {
-			String key = en.nextElement();
-			retval.put(key, input.get(key));
-		}
-		return retval;
 	}
 }

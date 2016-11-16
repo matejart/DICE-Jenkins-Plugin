@@ -30,6 +30,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import hudson.FilePath;
 
@@ -39,18 +43,33 @@ public class Utilities {
 			throws IOException {
 		File tmpFile = File.createTempFile("diceci-", ".json");
 		tmpFile.deleteOnExit();
-		
+
 		FileOutputStream fout = new FileOutputStream(tmpFile);
-		OutputStreamWriter stream = new OutputStreamWriter(fout);
-		
+		OutputStreamWriter stream = new OutputStreamWriter(
+				fout, Charset.forName("UTF-8"));
+
 		stream.write(fileContent);
-		
+
 		stream.close();
 		fout.close();
-		
+
 		FilePath retval = new FilePath(tmpFile);
-		
+
 		return retval;
 	}
 
+	public static Hashtable<String, Number> clone(Hashtable<String, Number> input) {
+		Hashtable<String, Number> retval = new Hashtable<String, Number>();
+		Enumeration<String> en = input.keys();
+		while (en.hasMoreElements()) {
+			String key = en.nextElement();
+			retval.put(key, input.get(key));
+		}
+		return retval;
+	}
+
+	public static ArrayList<String> clone(ArrayList<String> input) {
+		ArrayList<String> retval = new ArrayList<String>(input);
+		return retval;
+	}
 }
