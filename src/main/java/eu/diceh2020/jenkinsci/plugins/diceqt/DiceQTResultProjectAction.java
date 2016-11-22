@@ -80,20 +80,35 @@ public class DiceQTResultProjectAction implements Action {
 	 * @return
 	 */
 	public ArrayList<String> getMetricNames() {
-		TreeSet<String> metricNames = new TreeSet<String>();
+		return getCurrentBuildHistory().getMetrics();
+	}
+	
+	/**
+	 * Get a time series for the the given metric.
+	 * @param metricName The name of the metric to query
+	 * the history of.
+	 * @return A sequence of metric values.
+	 */
+	public ArrayList<Number> getMetricHistory(String metricName) {
+		return getCurrentBuildHistory().getHistory(metricName);
+	}
+	
+	private MetricsHistory getCurrentBuildHistory () {
+		final MetricsHistory history = new MetricsHistory(0);
 		
 		RunList<?> buildList = this.project.getBuilds();
 		for (Run<?, ?> build : buildList) {
 			DiceQTResultBuildAction action = build.getAction(
 					DiceQTResultBuildAction.class);
+			if (action == null)
+				continue;
+			
 			Hashtable<String, Number> metrics =
 					action.getDiceQTResultHistory().getMetrics();
-			Enumeration<String> ekeys = metrics.keys();
-			while (ekeys.hasMoreElements()) {
-				metricNames.add(ekeys.nextElement());
-			}
+			
+			history.appendMetrics(metrics);
 		}
 		
-		return new ArrayList<String>(metricNames);
+		return history;
 	}
 }

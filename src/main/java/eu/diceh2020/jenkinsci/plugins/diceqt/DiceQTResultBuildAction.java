@@ -87,6 +87,7 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	}
 	
 	public DiceQTResultHistory getDiceQTResultHistory() {
+		// TODO perhaps this is the wrong place
 		DiceQTResultHistory history = null;
 		WeakReference<DiceQTResultHistory> wr = this.diceQTResultHistory;
 		if (wr != null) {

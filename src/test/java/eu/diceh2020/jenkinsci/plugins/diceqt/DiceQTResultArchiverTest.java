@@ -204,6 +204,52 @@ public class DiceQTResultArchiverTest {
 		TreeSet<String> metricNamesSet = new TreeSet<String>(metricNames);
 		assertEquals(expectedMetricNames, metricNamesSet);
 	}
+		
+	/**
+	 * Test obtaining a history (a series) of the available
+	 * metrics.
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetMetricHistoryFull() throws Exception {
+		this.factoryCreateBuildsFull();
+		Hashtable<String, List<Number>> expectedHistory = 
+				new Hashtable<String, List<Number>>();
+		List<Number> latencyHistory = new ArrayList<Number>();
+		expectedHistory.put("latency", latencyHistory);
+		latencyHistory.add(123.55);
+		latencyHistory.add(329.12);
+		latencyHistory.add(211.38);
+		latencyHistory.add(310.31);
+		latencyHistory.add(291.44);
+		List<Number> throughputHistory = new ArrayList<Number>();
+		expectedHistory.put("throughput", throughputHistory);
+		throughputHistory.add(200.2);
+		throughputHistory.add(199.8);
+		throughputHistory.add(205.1);
+		throughputHistory.add(183.4);
+		throughputHistory.add(193.1);
+		List<Number> durationHistory = new ArrayList<Number>();
+		expectedHistory.put("duration", durationHistory);
+		durationHistory.add(5.1);
+		durationHistory.add(4.2);
+		durationHistory.add(6.3);
+		durationHistory.add(4.9);
+		durationHistory.add(5.2);
+		
+		DiceQTResultProjectAction projectAction = 
+				new DiceQTResultProjectAction(job);
+
+		MetricsHistoryTest.assertEqualsDelta(
+				expectedHistory.get("throughput"),
+				projectAction.getMetricHistory("throughput"));
+		MetricsHistoryTest.assertEqualsDelta(
+				expectedHistory.get("duration"),
+				projectAction.getMetricHistory("duration"));
+		MetricsHistoryTest.assertEqualsDelta(
+				expectedHistory.get("latency"),
+				projectAction.getMetricHistory("latency"));
+	}
 	
 	/***
 	 * Creates a list of builds, each containing a full list
