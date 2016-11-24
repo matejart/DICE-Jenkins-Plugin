@@ -31,19 +31,23 @@ import java.util.Hashtable;
 
 import hudson.model.*;
 
-public class DiceQTResultHistory implements ModelObject {
+/**
+ * Implementation of a model that represents a single build's
+ * results of the quality testing.
+ * 
+ * @author matej.artac@xlab.si
+ *
+ */
+public class DiceQTBuildResult implements ModelObject {
 	
 	/**
 	 * The {@link DiceQTResultBuildAction} that this report belongs to.
 	 */
 	private transient DiceQTResultBuildAction buildAction;
-	//private static AbstractBuild<?, ?> currentBuild = null;
 
-	DiceQTResultHistory(final DiceQTResultBuildAction buildAction, 
+	DiceQTBuildResult(final DiceQTResultBuildAction buildAction, 
 			TaskListener listener) throws IOException {
 		this.buildAction = buildAction;
-		
-		//DiceQTResultHistory.currentBuild = this.buildAction.getBuild();
 	}
 	
 	@Override

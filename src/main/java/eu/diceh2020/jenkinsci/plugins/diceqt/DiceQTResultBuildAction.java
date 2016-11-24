@@ -43,7 +43,7 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	private Hashtable<String, Number> metrics = null;
 
 	private final AbstractBuild<?, ?> build;
-	private transient WeakReference<DiceQTResultHistory> diceQTResultHistory;
+	private transient WeakReference<DiceQTBuildResult> diceQTResult;
 	
 	private transient static final Logger logger = 
 			Logger.getLogger(DiceQTResultBuildAction.class.getName());
@@ -65,12 +65,12 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 
 	@Override
 	public String getDisplayName() {
-		return "DICE history";
+		return "DICE build metrics";
 	}
 
 	@Override
 	public String getUrlName() {
-		return "diceHistory";
+		return "build-metrics";
 	}
 
 	public Hashtable<String, Number> getMetrics() {
@@ -82,34 +82,33 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	}
 
 	@Override
-	public DiceQTResultHistory getTarget() {
-		return getDiceQTResultHistory();
+	public DiceQTBuildResult getTarget() {
+		return getDiceQTResult();
 	}
 	
-	public DiceQTResultHistory getDiceQTResultHistory() {
-		// TODO perhaps this is the wrong place
-		DiceQTResultHistory history = null;
-		WeakReference<DiceQTResultHistory> wr = this.diceQTResultHistory;
+	public DiceQTBuildResult getDiceQTResult() {
+		DiceQTBuildResult result = null;
+		WeakReference<DiceQTBuildResult> wr = this.diceQTResult;
 		if (wr != null) {
-			history = wr.get();
-			if (history != null)
-				return history;
+			result = wr.get();
+			if (result != null)
+				return result;
 		}
 		
 		try {
-			history = new DiceQTResultHistory(this,
+			result = new DiceQTBuildResult(this,
 					StreamTaskListener.fromStdout());
 		} catch (IOException e) {logger.log(Level.SEVERE,
 				"Error creating new DiceQTResultHistory()", e);
 		}
-		this.diceQTResultHistory = new WeakReference<DiceQTResultHistory>(
-				history);
-		return history;
+		this.diceQTResult = new WeakReference<DiceQTBuildResult>(
+				result);
+		return result;
 		
 	}
 	
 	public void setDiceQTResultHistory(
-			WeakReference<DiceQTResultHistory> diceQTResultHistory) {
-		this.diceQTResultHistory = diceQTResultHistory;
+			WeakReference<DiceQTBuildResult> diceQTResultHistory) {
+		this.diceQTResult = diceQTResultHistory;
 	}
 }

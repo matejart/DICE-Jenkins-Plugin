@@ -104,7 +104,7 @@ public class DiceQTResultProjectAction implements Action {
 				continue;
 			
 			Hashtable<String, Number> metrics =
-					action.getDiceQTResultHistory().getMetrics();
+					action.getDiceQTResult().getMetrics();
 			
 			history.appendMetrics(metrics);
 		}
