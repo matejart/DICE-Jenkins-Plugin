@@ -23,3 +23,9 @@
  * THE SOFTWARE.
  * #L%
  */
+.metrics table {
+	border-color: black;
+	border-spacing: 0;
+	border-style: solid;
+	width: 100%;
+}

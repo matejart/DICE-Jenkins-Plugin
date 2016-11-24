@@ -26,13 +26,26 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
+import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.TreeSet;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+
 import antlr.collections.List;
 import hudson.model.*;
+import hudson.util.ChartUtil;
+import hudson.util.ChartUtil.NumberOnlyBuildLabel;
+import hudson.util.DataSetBuilder;
+import hudson.util.Graph;
 import hudson.util.RunList;
 
 /***
@@ -110,5 +123,60 @@ public class DiceQTResultProjectAction implements Action {
 		}
 		
 		return history;
+	}
+
+	public void doDisplayGraph(final StaplerRequest request,
+			final StaplerResponse response) throws IOException {
+		
+		final MetricsHistory history = this.getCurrentBuildHistory();
+		
+		final Graph graph = new DiceGraph() {
+
+			@Override
+			protected DataSetBuilder<String, Integer> createDataset() {
+				DataSetBuilder<String, Integer> dataSetBuilder =
+						new DataSetBuilder<String, Integer>();
+				
+				for (String metricName : history.getMetrics()) {
+					int buildNum = 1; // TODO get from history
+					for (Number val : history.getHistory(metricName)) {
+						dataSetBuilder.add(val, metricName, buildNum);
+						buildNum++;
+					}
+				}
+				
+				return dataSetBuilder;
+			}
+		};
+		
+		graph.doPng(request, response);
+	}
+	
+	private abstract class DiceGraph extends Graph {
+		
+		public DiceGraph() {
+			super(-1, 400, 300); // timestamp not available yet
+		}
+		
+		protected abstract DataSetBuilder<String, Integer> createDataset();
+		
+		public JFreeChart createGraph() {
+			final CategoryDataset dataset = createDataset().build();
+			String title = "Build Quality Testing History";
+			
+			final JFreeChart chart = ChartFactory.createLineChart(
+					title,
+					"build #",
+					"metric units",
+					dataset,
+					PlotOrientation.VERTICAL,
+					true, // legend?
+					true, // tooltips?
+					false // generate URLs?
+					);
+			chart.setBackgroundPaint(Color.LIGHT_GRAY);
+			
+			return chart;
+		}
 	}
 }

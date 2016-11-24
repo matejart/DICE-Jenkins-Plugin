@@ -1,18 +1,30 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
          xmlns:l="/lib/layout">
-  <l:layout norefresh="true">
+  <l:layout norefresh="true" css="/plugin/dice-qt/css/style.css">
     <st:include it="${it.project}" page="sidepanel.jelly"/>
     <l:main-panel>
-      <h1>DICE!</h1>
-      <p>Project: ${it.project.getBuilds().size()}</p>
-      <table>
+      <h1>Quality Testing History</h1>
+
+      <div>
+        <center>
+          <img class="trend" src="./displayGraph?width=600&amp;height=440"
+            width="600" height="400" />
+        </center>
+      </div>
+
+      <table class="metrics">
         <j:set var="metrics" value="${it.getMetricNames()}"/>
         <j:forEach var="metric" items="${metrics}">
           <tr>
             <td>${metric}</td>
+
+            <j:forEach var="val" items="${it.getMetricHistory(metric)}">
+              <td>${val}</td>
+            </j:forEach>
           </tr>
         </j:forEach>
       </table>
+
     </l:main-panel>
   </l:layout>
 </j:jelly>
