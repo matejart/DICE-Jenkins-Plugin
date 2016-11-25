@@ -251,6 +251,44 @@ public class DiceQTResultArchiverTest {
 				projectAction.getMetricHistory("latency"));
 	}
 	
+	/**
+	 * Tests the ability to obtain an iterable set of metric history
+	 * rows useful for displaying tables. Each row starts with the build
+	 * number. The rest of the entries in the row correspond to the
+	 * value of the metric measured in the build.
+	 */
+	@Test
+	public void testGetReportTableRows() throws Exception {
+		this.factoryCreateBuildsFull();
+		
+		ArrayList<ArrayList<Number>> expectedTable = 
+				new ArrayList<ArrayList<Number>>();
+		
+		ArrayList<Number> row;
+		row = new ArrayList<Number>(); expectedTable.add(row);
+		row.add(0); row.add(123.55); row.add(200.2); row.add(5.1);
+		row = new ArrayList<Number>(); expectedTable.add(row);
+		row.add(1); row.add(329.12); row.add(199.8); row.add(4.2);
+		row = new ArrayList<Number>(); expectedTable.add(row);
+		row.add(2); row.add(211.38); row.add(205.1); row.add(6.3);
+		row = new ArrayList<Number>(); expectedTable.add(row);
+		row.add(3); row.add(310.31); row.add(183.4); row.add(4.9);
+		row = new ArrayList<Number>(); expectedTable.add(row);
+		row.add(4); row.add(291.44); row.add(193.1); row.add(5.2);
+		
+		DiceQTResultProjectAction projectAction = 
+				new DiceQTResultProjectAction(job);
+		
+		ArrayList<ArrayList<Number>> table =
+				projectAction.getMetricHistoryTable();
+		
+		assertEquals(expectedTable.size(), table.size());
+		for (int r = 0; r < table.size(); r++) {
+			MetricsHistoryTest.assertEqualsDelta(
+					expectedTable.get(r), table.get(r));
+		}
+	}
+	
 	/***
 	 * Creates a list of builds, each containing a full list
 	 * of metrics.

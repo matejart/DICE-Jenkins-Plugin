@@ -100,6 +100,45 @@ public class DiceQTResultProjectAction implements Action {
 	public ArrayList<Number> getMetricHistory(String metricName) {
 		return getCurrentBuildHistory().getHistory(metricName);
 	}
+
+	/**
+	 * Returns a transposed representation of the metric history useful
+	 * for outputting tables with builds for rows and metrics for
+	 * columns.
+	 * 
+	 * @return a table, i.e., a list of lists of numbers. The outer
+	 * list contains rows in the table, and the inner list represents
+	 * columns (cells) in the row. The first column is always a build
+	 * number. The rest of the values are in the order of metrics as
+	 * returned by the {@code getMetricNames()}.
+	 */
+	public ArrayList<ArrayList<Number>> getMetricHistoryTable() {
+		ArrayList<ArrayList<Number>> retval =
+				new ArrayList<ArrayList<Number>>();
+		
+		// initialise the table
+		MetricsHistory history = this.getCurrentBuildHistory();
+		int buildNo = history.getStartBuild();
+		for (; buildNo <= history.getEndBuild(); buildNo++) {
+			ArrayList<Number> row = new ArrayList<Number>();
+			row.add(buildNo);
+			retval.add(row);
+		}
+		
+		// append metric values to the rows, one metric at a time
+		ArrayList<String> metricNames = this.getMetricNames();
+		for (String metricName : metricNames) {
+			ArrayList<Number> metricHistory = this.getMetricHistory(
+					metricName);
+			for (int r = 0; r < metricHistory.size(); r++) {
+				Number value = metricHistory.get(r);
+				retval.get(r)
+					.add(value);
+			}
+		}
+		
+		return retval;
+	}
 	
 	private MetricsHistory getCurrentBuildHistory () {
 		final MetricsHistory history = new MetricsHistory(0);
@@ -119,7 +158,7 @@ public class DiceQTResultProjectAction implements Action {
 		
 		return history;
 	}
-
+	
 	public void doDisplayGraph(final StaplerRequest request,
 			final StaplerResponse response) throws IOException {
 		

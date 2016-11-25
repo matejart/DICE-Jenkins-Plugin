@@ -12,14 +12,18 @@
         </center>
       </div>
 
+      <j:set var="metrics" value="${it.getMetricNames()}"/>
       <table class="metrics">
-        <j:set var="metrics" value="${it.getMetricNames()}"/>
-        <j:forEach var="metric" items="${metrics}">
+        <tr>
+          <th>Build #</th>
+          <j:forEach var="metric" items="${metrics}">
+            <th>${metric}</th>
+          </j:forEach>
+        </tr>
+        <j:forEach var="row" items="${it.getMetricHistoryTable()}">
           <tr>
-            <td>${metric}</td>
-
-            <j:forEach var="val" items="${it.getMetricHistory(metric)}">
-              <td>${val}</td>
+            <j:forEach var="value" items="${row}">
+              <td>${value}</td>
             </j:forEach>
           </tr>
         </j:forEach>
