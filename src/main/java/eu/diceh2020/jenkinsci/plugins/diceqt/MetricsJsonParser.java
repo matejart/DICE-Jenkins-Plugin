@@ -90,7 +90,7 @@ public class MetricsJsonParser {
 		
 		JSONObject json = new JSONObject(jsonSource);
 		Iterator<String> k = json.keys();
-		while (k.hasNext()) { 
+		while (k.hasNext()) {
 			String metric = k.next();
 			Double value = json.getDouble(metric);
 			

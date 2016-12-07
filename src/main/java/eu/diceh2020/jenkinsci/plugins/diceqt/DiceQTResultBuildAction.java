@@ -37,6 +37,18 @@ import org.kohsuke.stapler.StaplerProxy;
 import hudson.model.*;
 import hudson.util.StreamTaskListener;
 
+/**
+ * This class stores the DICE Quality Testing results of a build. The main
+ * focus of this Action is to store a list of metrics, normally arrived at
+ * through running a benchmark or performing of DICE Quality Testing tools
+ * against an application.
+ * 
+ * The weak reference to {@link DiceQTBuildResult} enables some extensions
+ * in displaying the properties of the job's results.
+ * 
+ * @author matej.artac@xlab.si
+ *
+ */
 public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	
 	// Stores the build results

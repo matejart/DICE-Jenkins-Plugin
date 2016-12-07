@@ -40,15 +40,12 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
-import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
-import hudson.tasks.junit.*;
-import hudson.util.RunList;
 import jenkins.tasks.SimpleBuildStep;
 
 import eu.diceh2020.jenkinsci.plugins.diceqt.*;
@@ -56,12 +53,16 @@ import eu.diceh2020.jenkinsci.plugins.diceqt.*;
 /***
  * The {@code DiceQTResultArchiver} implements collecting of the data placed in
  * the workspace by a Quality Testing tool. It also defines a configuration
- * parameter to be set with each build, pointing to where the quality testing
- * execution's output file will be stored within the workspace.
+ * parameter to be set in the post-build job step and used with each build within
+ * the job, pointing to where the quality testing execution's output file will be
+ * stored within the workspace.
  * 
  * The class extends {@code Recorder}, which is a suitable choice for collecting
  * job execution's results after the fact. It also implements
  * {@code SimpleBuildStep}, which lets us access the workspace's contents.
+ * 
+ * The {@code DiceQTResultArchiver} stores the build result representation as
+ * an instance of the {@link DiceQTResultBuildAction}.
  * @author matej.artac (at) xlab.si
  *
  */

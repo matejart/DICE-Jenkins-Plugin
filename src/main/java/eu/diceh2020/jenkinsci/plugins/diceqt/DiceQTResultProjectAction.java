@@ -29,9 +29,7 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.TreeSet;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -40,10 +38,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import antlr.collections.List;
 import hudson.model.*;
-import hudson.util.ChartUtil;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
 import hudson.util.DataSetBuilder;
 import hudson.util.Graph;
 import hudson.util.RunList;
