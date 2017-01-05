@@ -1,6 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
          xmlns:l="/lib/layout">
-  <l:layout norefresh="true" css="/plugin/dice-qt/css/style.css">
+  <l:layout norefresh="true" css="/plugin/dice-qt/css/style_dice.css">
     <st:include it="${it.project}" page="sidepanel.jelly"/>
     <l:main-panel>
       <h1>Quality Testing History</h1>

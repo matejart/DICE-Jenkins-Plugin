@@ -1,0 +1,9 @@
+<j:jelly xmlns:j="jelly.core">
+  <div>
+    <center>
+      <a href="dice-dashboard/">
+        <img class="trend" src="dice-dashboard/displayGraph" />
+      </a>
+    </center>
+  </div>
+</j:jelly>

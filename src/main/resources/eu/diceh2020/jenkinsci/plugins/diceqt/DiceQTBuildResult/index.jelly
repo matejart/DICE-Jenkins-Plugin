@@ -1,10 +1,14 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
          xmlns:l="/lib/layout">
-  <l:layout norefresh="true">
+  <l:layout norefresh="true" css="/plugin/dice-qt/css/style_dice.css">
     <st:include it="${it.build}" page="sidepanel.jelly"/>
     <l:main-panel>
-      <h1>DICE!</h1>
+      <h1>Metrics for build #${it.build.id}</h1>
       <table>
+          <tr>
+            <th>Metric name</th>
+            <th>Value</th>
+          </tr>
         <j:set var="metrics" value="${it.getMetrics()}"/>
         <j:forEach var="metric" items="${metrics.keys()}">
           <tr>
@@ -13,7 +17,6 @@
           </tr>
         </j:forEach>
       </table>
-      <p>Build: ${it.build.getClass()}</p>
     </l:main-panel>
   </l:layout>
 </j:jelly>
