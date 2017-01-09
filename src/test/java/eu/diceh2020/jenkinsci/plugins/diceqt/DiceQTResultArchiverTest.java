@@ -183,13 +183,13 @@ public class DiceQTResultArchiverTest {
 	 */
 	@Test
 	public void testGetMetricNamesMixed() throws Exception {
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 1, Result.SUCCESS, false,
 				"{'latency': 123.55}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 2, Result.SUCCESS, false,
 				"{'latency': 329.12}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 3, Result.SUCCESS, false,
 				"{'throughput': 205.1}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 4, Result.SUCCESS, false,
 				"{'duration': 4.9}"));
 
 		TreeSet<String> expectedMetricNames = new TreeSet<String>();
@@ -261,27 +261,36 @@ public class DiceQTResultArchiverTest {
 	public void testGetReportTableRows() throws Exception {
 		this.factoryCreateBuildsFull();
 		
+		ArrayList<String> expectedMetricNames =
+				new ArrayList<String>();
+		expectedMetricNames.add("throughput");
+		expectedMetricNames.add("latency");
+		expectedMetricNames.add("duration");
+		
 		ArrayList<ArrayList<Number>> expectedTable = 
 				new ArrayList<ArrayList<Number>>();
 		
 		ArrayList<Number> row;
 		row = new ArrayList<Number>(); expectedTable.add(row);
-		row.add(0); row.add(123.55); row.add(200.2); row.add(5.1);
+		row.add(1); row.add(200.2); row.add(123.55); row.add(5.1);
 		row = new ArrayList<Number>(); expectedTable.add(row);
-		row.add(1); row.add(329.12); row.add(199.8); row.add(4.2);
+		row.add(2); row.add(199.8); row.add(329.12); row.add(4.2);
 		row = new ArrayList<Number>(); expectedTable.add(row);
-		row.add(2); row.add(211.38); row.add(205.1); row.add(6.3);
+		row.add(3); row.add(205.1); row.add(211.38); row.add(6.3);
 		row = new ArrayList<Number>(); expectedTable.add(row);
-		row.add(3); row.add(310.31); row.add(183.4); row.add(4.9);
+		row.add(4); row.add(183.4); row.add(310.31); row.add(4.9);
 		row = new ArrayList<Number>(); expectedTable.add(row);
-		row.add(4); row.add(291.44); row.add(193.1); row.add(5.2);
+		row.add(5); row.add(193.1); row.add(291.44); row.add(5.2);
 		
 		DiceQTResultProjectAction projectAction = 
 				new DiceQTResultProjectAction(job);
 		
+		ArrayList<String> metricNames =
+				projectAction.getMetricNames();
 		ArrayList<ArrayList<Number>> table =
 				projectAction.getMetricHistoryTable();
 		
+		assertEquals(expectedMetricNames, metricNames);
 		assertEquals(expectedTable.size(), table.size());
 		for (int r = 0; r < table.size(); r++) {
 			MetricsHistoryTest.assertEqualsDelta(
@@ -295,20 +304,21 @@ public class DiceQTResultArchiverTest {
 	 * @throws Exception
 	 */
 	private void factoryCreateBuildsFull() throws Exception {
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 1, Result.SUCCESS, false,
 				"{'latency': 123.55, 'throughput': 200.2, 'duration': 5.1}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 2, Result.SUCCESS, false,
 				"{'latency': 329.12, 'throughput': 199.8, 'duration': 4.2}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 3, Result.SUCCESS, false,
 				"{'latency': 211.38, 'throughput': 205.1, 'duration': 6.3}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 4, Result.SUCCESS, false,
 				"{'latency': 310.31, 'throughput': 183.4, 'duration': 4.9}"));
-		buildList.add(createBuild(job, Result.SUCCESS, false,
+		buildList.add(createBuild(job, 5, Result.SUCCESS, false,
 				"{'latency': 291.44, 'throughput': 193.1, 'duration': 5.2}"));
 	}
 	
 	private FreeStyleBuild createBuild(FreeStyleProject project,
-			Result result, boolean building, String fileContent)
+			int buildNum, Result result, boolean building,
+			String fileContent)
 					throws Exception {
 		FreeStyleBuild build = spy(new FreeStyleBuild(project));
 		Hashtable<String, Number> metrics = 
@@ -321,6 +331,8 @@ public class DiceQTResultArchiverTest {
 		when(build.isBuilding()).thenReturn(building);
 		when(build.getAction(DiceQTResultBuildAction.class))
 			.thenReturn(action);
+		when(build.getNumber()).thenReturn(buildNum);
+		when(build.getId()).thenReturn(String.format("%d", buildNum));
 		
 		return build;
 	}

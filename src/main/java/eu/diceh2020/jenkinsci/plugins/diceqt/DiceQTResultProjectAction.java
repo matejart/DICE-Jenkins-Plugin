@@ -118,8 +118,8 @@ public class DiceQTResultProjectAction implements Action {
 		
 		// initialise the table
 		MetricsHistory history = this.getCurrentBuildHistory();
-		int buildNo = history.getStartBuild();
-		for (; buildNo <= history.getEndBuild(); buildNo++) {
+		ArrayList<Integer> buildNumbers = history.getBuildNumbers();
+		for (Integer buildNo : buildNumbers) {
 			ArrayList<Number> row = new ArrayList<Number>();
 			row.add(buildNo);
 			retval.add(row);
@@ -153,7 +153,7 @@ public class DiceQTResultProjectAction implements Action {
 			Hashtable<String, Number> metrics =
 					action.getDiceQTResult().getMetrics();
 			
-			history.appendMetrics(metrics);
+			history.appendMetrics(metrics, build.getNumber());
 		}
 		
 		return history;
@@ -171,11 +171,13 @@ public class DiceQTResultProjectAction implements Action {
 				DataSetBuilder<String, Integer> dataSetBuilder =
 						new DataSetBuilder<String, Integer>();
 				
+				ArrayList<Integer> buildNumbers = history.getBuildNumbers();
 				for (String metricName : history.getMetrics()) {
-					int buildNum = 1; // TODO get from history
+					int buildNumIndex = 0;
 					for (Number val : history.getHistory(metricName)) {
-						dataSetBuilder.add(val, metricName, buildNum);
-						buildNum++;
+						dataSetBuilder.add(val, metricName,
+								buildNumbers.get(buildNumIndex));
+						buildNumIndex++;
 					}
 				}
 				

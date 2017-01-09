@@ -56,6 +56,12 @@ public class MetricsHistory {
 	 */
 	private int endBuild;
 	/**
+	 * A list of build numbers. This is useful because we can
+	 * store a succession of build numbers without gaps in the
+	 * history for any of the deleted builds.
+	 */
+	private final ArrayList<Integer> buildNumbers = new ArrayList<Integer>();
+	/**
 	 * A list of metric names. Each metric name in the list
 	 * corresponds to a row in the history.
 	 */
@@ -106,9 +112,31 @@ public class MetricsHistory {
 			return this.startBuild - this.endBuild + 1;
 	}
 	
-	public int appendMetrics(Hashtable<String, Number> metrics) {
-		int newEndBuild = (this.endBuild < this.startBuild) ?
-				this.startBuild : this.endBuild + 1;
+	/**
+	 * Returns the current list of build numbers. This is useful
+	 * because there may be gaps in the builds (e.g., because a user
+	 * has deleted a build), but we don't store this gap explicitly
+	 * in the history.
+	 * @return a collection of integers representing the build
+	 * numbers in the history of the builds.
+	 */
+	public ArrayList<Integer> getBuildNumbers() {
+		return new ArrayList<Integer>(this.buildNumbers);
+	}
+	
+	/**
+	 * Appends a metric vector to the end of the series.
+	 * @param metrics The dictionary containing the build metrics
+	 * to be appended.
+	 * @param buildNumber A build number (or unique ID) assigned
+	 * to the build, which produced this metrics dictionary.
+	 * @return The new end build (normally the same as the supplied
+	 * buildNumber).
+	 */
+	public int appendMetrics(Hashtable<String, Number> metrics,
+			int buildNumber) {
+		int newEndBuild = Math.max(this.endBuild, buildNumber);
+		this.buildNumbers.add(buildNumber);
 				
 		for (String name : metrics.keySet()) {
 			int row = this.metrics.indexOf(name);
@@ -143,7 +171,7 @@ public class MetricsHistory {
 			}
 			this.history = Nd4j.append(this.history,
 					1, 0.0, 1);
-			this.history.putColumn(newEndBuild - this.startBuild,
+			this.history.putColumn(this.history.columns() - 1,
 					newCol);
 		}
 		
@@ -151,14 +179,21 @@ public class MetricsHistory {
 		return newEndBuild;
 	}
 	
+	/**
+	 * Returns the time series of the metric. The series is sorted from
+	 * the oldest to the newest.
+	 * @param metricName The name of the metric to retrieve the history of.
+	 * @return A collection of values representing the measured metrics
+	 * in each respective build.
+	 */
 	public ArrayList<Number> getHistory(String metricName) {
 		ArrayList<Number> retval = new ArrayList<Number>();
 		
 		int row = this.metrics.indexOf(metricName);
 		if (row >= 0) {
-			int index[] = new int[]{ row, this.startBuild };
-			for (; index[1] <= this.endBuild; index[1]++) {
-				retval.add(history.getDouble(index[0], index[1]));
+			int index[] = new int[]{ row, 0 };
+			for (; index[1] <= this.history.columns() - 1; index[1]++) {
+				retval.add(this.history.getDouble(index[0], index[1]));
 			}
 		}
 		return retval;
