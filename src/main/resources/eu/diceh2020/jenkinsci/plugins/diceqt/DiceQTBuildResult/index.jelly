@@ -3,19 +3,25 @@
   <l:layout norefresh="true" css="/plugin/dice-qt/css/style_dice.css">
     <st:include it="${it.build}" page="sidepanel.jelly"/>
     <l:main-panel>
+      <a name="skip2content"></a>
       <h1>Metrics for build #${it.build.id}</h1>
-      <table>
-          <tr>
-            <th>Metric name</th>
-            <th>Value</th>
+      <br/>
+      <table class="metrics stripped build-details">
+        <thead>
+          <tr class="pane-header">
+            <th class="column-header">Metric name</th>
+            <th class="column-header">Value</th>
           </tr>
-        <j:set var="metrics" value="${it.getMetrics()}"/>
-        <j:forEach var="metric" items="${metrics.keys()}">
-          <tr>
-            <td>${metric}</td>
-            <td>${metrics.get(metric)}</td>
-          </tr>
-        </j:forEach>
+        </thead>
+        <tbody class="pane-content">
+          <j:set var="metrics" value="${it.getMetrics()}"/>
+          <j:forEach var="metric" items="${metrics.keys()}">
+            <tr class="build-row">
+              <td>${metric}</td>
+              <td>${metrics.get(metric)}</td>
+            </tr>
+          </j:forEach>
+        </tbody>
       </table>
     </l:main-panel>
   </l:layout>

@@ -23,9 +23,46 @@
  * THE SOFTWARE.
  * #L%
  */
+
+.metrics-header{
+	text-align: center;
+	padding-bottom: 10px;
+}
+
+.metrics{
+	width: 100%;
+    border-collapse: collapse;
+	border: solid 1px #f0f0f0;
+    border-radius: 4px;
+}
+
+.metrics.build-details{
+	min-width: 400px;
+    max-width: 100%;
+    width: inherit;
+}
+
 .metrics table {
 	border-color: black;
 	border-spacing: 0;
 	border-style: solid;
 	width: 100%;
+}
+
+.metrics td{
+	padding: 6px 0px 6px 10px;
+	opacity: 0.8;
+}
+
+.metrics td:first-child{
+	font-weight: 500;
+	color: black;
+	opacity: 1;
+	/*text-decoration: underline;*/
+}
+
+.column-header{
+	padding: 8px 0;
+	text-align: left;
+	padding-left: 10px;
 }

@@ -3,7 +3,8 @@
   <l:layout norefresh="true" css="/plugin/dice-qt/css/style_dice.css">
     <st:include it="${it.project}" page="sidepanel.jelly"/>
     <l:main-panel>
-      <h1>Quality Testing History</h1>
+      <a name="skip2content"></a>
+      <h1 class="metrics-header">Quality Testing History</h1>
 
       <div>
         <center>
@@ -12,21 +13,26 @@
         </center>
       </div>
 
+      <br/>
       <j:set var="metrics" value="${it.getMetricNames()}"/>
-      <table class="metrics">
-        <tr>
-          <th>Build #</th>
-          <j:forEach var="metric" items="${metrics}">
-            <th>${metric}</th>
-          </j:forEach>
-        </tr>
-        <j:forEach var="row" items="${it.getMetricHistoryTable()}">
-          <tr>
-            <j:forEach var="value" items="${row}">
-              <td>${value}</td>
+      <table class="metrics stripped">
+        <thead>
+          <tr class="pane-header">
+            <th class="column-header">Build #</th>
+            <j:forEach var="metric" items="${metrics}">
+              <th class="column-header">${metric}</th>
             </j:forEach>
           </tr>
-        </j:forEach>
+        </thead>
+        <tbody class="pane-content">
+          <j:forEach var="row" items="${it.getMetricHistoryTable()}">
+            <tr class="build-row">
+              <j:forEach var="value" items="${row}">
+                <td>${value}</td>
+              </j:forEach>
+            </tr>
+          </j:forEach>
+        </tbody>
       </table>
 
     </l:main-panel>
