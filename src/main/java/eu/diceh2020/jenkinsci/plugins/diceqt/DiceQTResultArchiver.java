@@ -192,7 +192,8 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		}
 
 		public String getDisplayName() {
-			return "DICE's Quality check";
+			return LocalMessages.getMessage(
+					LocalMessages.ARCHIVER_DESCRIPTOR_DISPLAY_NAME);
 		}
 	}
 }

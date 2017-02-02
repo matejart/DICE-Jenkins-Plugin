@@ -6,7 +6,7 @@
     See global.jelly for a general discussion about jelly script.
   -->
 
-  <f:entry title="PathToResults" field="pathToResults">
+  <f:entry title="${%dice-qt.config.path_to_results}" field="pathToResults">
     <f:textbox />
   </f:entry>
 </j:jelly>

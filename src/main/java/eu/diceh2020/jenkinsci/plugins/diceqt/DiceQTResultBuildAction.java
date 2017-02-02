@@ -77,7 +77,8 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 
 	@Override
 	public String getDisplayName() {
-		return "DICE build metrics";
+		return LocalMessages.getMessage(
+				LocalMessages.BUILD_ACTION_DISPLAY_NAME);
 	}
 
 	@Override

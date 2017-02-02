@@ -4,7 +4,7 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #%L
  * DICE Jenkins plug-in
  * %%
- * Copyright (C) 2016 XLAB d.o.o.
+ * Copyright (C) 2017 XLAB d.o.o.
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,41 +26,29 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
  * #L%
  */
 
-import java.io.IOException;
-import java.util.Hashtable;
+import static org.junit.Assert.*;
 
-import hudson.model.*;
+import java.util.Locale;
 
-/**
- * Implementation of a model that represents a single build's
- * results of the quality testing.
- * 
- * @author matej.artac@xlab.si
- *
- */
-public class DiceQTBuildResult implements ModelObject {
-	
-	/**
-	 * The {@link DiceQTResultBuildAction} that this report belongs to.
-	 */
-	private transient DiceQTResultBuildAction buildAction;
+import org.junit.Test;
 
-	DiceQTBuildResult(final DiceQTResultBuildAction buildAction, 
-			TaskListener listener) throws IOException {
-		this.buildAction = buildAction;
-	}
-	
-	@Override
-	public String getDisplayName() {
-		return LocalMessages.getMessage(
-				LocalMessages.BUILD_RESULT_DISPLAY_NAME);
+public class LocalMessagesTest {
+
+	@Test
+	public void testGetMessage() {
+		String expectedMessage;
+		switch (Locale.getDefault().getLanguage()) {
+		case "sl":
+			expectedMessage = "DICE - zgodovina izvajanja";
+			break;
+
+		default:
+			expectedMessage = "DICE's Quality check";
+			break;
+		}
+		assertEquals(expectedMessage,
+				LocalMessages.getMessage(
+						LocalMessages.ARCHIVER_DESCRIPTOR_DISPLAY_NAME));
 	}
 
-	public AbstractBuild<?, ?> getBuild() {
-		return this.buildAction.getBuild();
-	}
-	
-	public Hashtable<String, Number> getMetrics() {
-		return this.buildAction.getMetrics();
-	}
 }

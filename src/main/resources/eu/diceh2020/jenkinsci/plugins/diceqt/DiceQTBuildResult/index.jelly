@@ -5,13 +5,13 @@
     <st:include it="${it.build}" page="sidepanel.jelly"/>
     <l:main-panel>
       <a name="skip2content"></a>
-      <h1>Metrics for build #${it.build.id}</h1>
+      <h1>${%dice_qt.config.title} #${it.build.id}</h1>
       <br/>
       <table class="metrics stripped build-details">
         <thead>
           <tr class="pane-header">
-            <th class="column-header">Metric name</th>
-            <th class="column-header">Value</th>
+            <th class="column-header">${%dice_qt.config.metric.name}</th>
+            <th class="column-header">${%dice_qt.config.metric.value}</th>
           </tr>
         </thead>
         <tbody class="pane-content">

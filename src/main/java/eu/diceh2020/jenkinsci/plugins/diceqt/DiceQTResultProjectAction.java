@@ -66,7 +66,8 @@ public class DiceQTResultProjectAction implements Action {
 
 	@Override
 	public String getDisplayName() {
-		return "DICE graph";
+		return LocalMessages.getMessage(
+				LocalMessages.PROJECT_ACTION_DISPLAY_NAME);
 	}
 
 	@Override
