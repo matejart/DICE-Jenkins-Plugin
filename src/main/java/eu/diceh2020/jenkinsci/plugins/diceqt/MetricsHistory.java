@@ -29,9 +29,6 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-
 /**
  * This class represents the report of the project's performance.
  * It contains history of the performance metrics through the
@@ -46,7 +43,7 @@ public class MetricsHistory {
 	 * offset from the startBuild. Each row represents the
 	 * data history of the respective metric.  
 	 */
-	private INDArray history;
+	private ArrayList<ArrayList<Number>> history;
 	/**
 	 * Build number of the first column in the history.
 	 */
@@ -123,6 +120,24 @@ public class MetricsHistory {
 	public ArrayList<Integer> getBuildNumbers() {
 		return new ArrayList<Integer>(this.buildNumbers);
 	}
+		
+	/**
+	 * Extend the matrix to contain the newSize rows.
+	 * @param matrix The collection of collections of values to
+	 * extend.
+	 * @param newRowCount The number of rows to add.
+	 */
+	private static void extendHistory(
+			ArrayList<ArrayList<Number>> matrix, int newRowCount) {
+		
+		int targetRows = matrix.get(0).size() + newRowCount;
+		double newValue = 0.0;
+		for (ArrayList<Number> column : matrix) {
+			while (column.size() < targetRows) {
+				column.add(newValue);
+			}
+		}
+	}
 	
 	/**
 	 * Appends a metric vector to the end of the series.
@@ -146,33 +161,28 @@ public class MetricsHistory {
 			}
 		}
 		
-		INDArray newCol = Nd4j.zeros(this.metrics.size(), 1);
-		int[] index = new int[] {0, 0};
+		ArrayList<Number> newCol = new ArrayList<Number>();
 		for (String name : this.metrics) {
 			double value = 0.0;
 			if (metrics.containsKey(name))
 			{
 				value = metrics.get(name).doubleValue();
 			}
-			newCol.putScalar(index, value);
-			index[0]++;
+			newCol.add(value);
 		}
 		
 		if (this.history == null) {
-			this.history = newCol;
+			this.history = new ArrayList<>();
+			this.history.add(newCol);
 		} else {
 			// extend for any new metrics
 			int newMetricsCount = 
-					this.metrics.size() - this.history.rows();
+					this.metrics.size() - this.history.get(0).size();
 			if (newMetricsCount > 0)
 			{
-				this.history = Nd4j.append(this.history,
-						newMetricsCount, 0.0, 0);
+				extendHistory(this.history, newMetricsCount);
 			}
-			this.history = Nd4j.append(this.history,
-					1, 0.0, 1);
-			this.history.putColumn(this.history.columns() - 1,
-					newCol);
+			this.history.add(newCol);
 		}
 		
 		this.endBuild = newEndBuild;
@@ -191,9 +201,8 @@ public class MetricsHistory {
 		
 		int row = this.metrics.indexOf(metricName);
 		if (row >= 0) {
-			int index[] = new int[]{ row, 0 };
-			for (; index[1] <= this.history.columns() - 1; index[1]++) {
-				retval.add(this.history.getDouble(index[0], index[1]));
+			for (ArrayList<Number> column : this.history) {
+				retval.add(column.get(row));
 			}
 		}
 		return retval;

@@ -112,12 +112,6 @@
       <artifactId>json</artifactId>
       <version>20160810</version>
     </dependency>
-    <dependency>
-      <groupId>org.nd4j</groupId>
-      <artifactId>nd4j-native-platform</artifactId>
-      <version>0.6.0</version>
-    </dependency>
-
   </dependencies>
 
 </project>
