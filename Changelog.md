@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+* Removed nd4j library because of runtime problems and incompatibilities
+
 ## 0.2.1: Intermediate release
 
 * Reimplementation of the plug-in without JUnit plug-in dependency
