@@ -119,6 +119,56 @@ public class MetricsJsonParserTest {
 		assertEquals(expected, results);
 	}
 	
+	@Test
+	public void testParseArrayEntry()
+			throws IOException, InterruptedException {
+		
+		String fileContent = "{"
+				+ "latency: [2822.834,7811.597,14301.093]"
+				+ "}";
+		
+		Hashtable<String, Number>  expected = new Hashtable<String, Number>();
+		expected.put("latency[0]", 2822.834);
+		expected.put("latency[1]", 7811.597);
+		expected.put("latency[2]", 14301.093);
+		
+		FilePath pathArrayEntry = Utilities.createTemporaryFile(
+				fileContent);
+		
+		Dictionary<String, Number> results =
+				MetricsJsonParser.parse(pathArrayEntry);
+		
+		assertNotNull(results);
+		assertEquals(expected.size(), results.size());
+		assertEquals(expected, results);
+	}
+
+	@Test
+	public void testParseMixedScalarAndArrayEntry()
+			throws IOException, InterruptedException {
+		
+		String fileContent = "{"
+				+ "latency: [2822.834,7811.597,14301.093],"
+				+ "throughput: 553.23"
+				+ "}";
+		
+		Hashtable<String, Number>  expected = new Hashtable<String, Number>();
+		expected.put("latency[0]", 2822.834);
+		expected.put("latency[1]", 7811.597);
+		expected.put("latency[2]", 14301.093);
+		expected.put("throughput", 553.23);
+		
+		FilePath pathArrayEntry = Utilities.createTemporaryFile(
+				fileContent);
+		
+		Dictionary<String, Number> results =
+				MetricsJsonParser.parse(pathArrayEntry);
+		
+		assertNotNull(results);
+		assertEquals(expected.size(), results.size());
+		assertEquals(expected, results);
+	}
+	
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	

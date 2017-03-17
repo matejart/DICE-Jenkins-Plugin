@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import hudson.FilePath;
@@ -92,11 +93,23 @@ public class MetricsJsonParser {
 		Iterator<String> k = json.keys();
 		while (k.hasNext()) {
 			String metric = k.next();
-			Double value = json.getDouble(metric);
 			
-			retval.put(metric, value);
+			Object value = json.get(metric);
+			if (value instanceof JSONArray) {
+				JSONArray valueArray = (JSONArray) value;
+				for (int i = 0; i < valueArray.length(); i++) {
+					String metricSub = String.format("%s[%d]",
+							metric, i);
+					retval.put(metricSub, valueArray.getDouble(i));
+				}
+			}
+			else {
+				Double valueDbl = json.getDouble(metric);
+
+				retval.put(metric, valueDbl);
+			}
 		}
-		
+
 		return retval;
 	}
 }
