@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+* Addes support for arrays in the results output `.json` file
+
 ## 0.2.2
 
 * Removed nd4j library because of runtime problems and incompatibilities
