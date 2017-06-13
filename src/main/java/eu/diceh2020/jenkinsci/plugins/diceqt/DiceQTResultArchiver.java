@@ -98,17 +98,13 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		return new DiceQTResultProjectAction(project);
 	}
 
-	/**
-	 * This method gets called in Jenkins after a build.
-	 */
-	@Override
-	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
-			throws InterruptedException, IOException {
-		
+	public static void archiveResults(Run<?, ?> run, FilePath workspace,
+			AbstractBuild<?, ?> build, TaskListener listener, String pathToResults)
+					throws InterruptedException, IOException {
 		PrintStream logger = listener.getLogger();
 		logger.println(String.format(
 				"Collecting the quality metrics data from %s.",
-				this.pathToResults));
+				pathToResults));
 		if (run == null) {
 			logger.println("Run is null.");
 		} else {
@@ -119,7 +115,7 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		// compose a FilePath to point to results file: a combination
 		// of workspace and the configuration parameter of the plugin
 		FilePath resultsFilePath = new FilePath(workspace,
-				this.pathToResults);
+				pathToResults);
 
 		Hashtable<String, Number> metrics = MetricsJsonParser
 				.parse(resultsFilePath);
@@ -128,7 +124,7 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 			throw new FileNotFoundException(String.format(
 					"The metrics file %s not found. The program "
 					+ "called by the job didn't output any results?",
-					this.pathToResults));
+					pathToResults));
 		}
 
 		Enumeration<String> emetrics = metrics.keys();
@@ -147,7 +143,6 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		DiceQTResultBuildAction action = run.getAction(DiceQTResultBuildAction.class);
 		boolean appending;
 		if (action == null) {
-			AbstractBuild<?, ?> build = this.getBuild(run);
 			action = new DiceQTResultBuildAction(build, metrics);
 			appending = false;
 		} else {
@@ -160,6 +155,17 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		} else {
 			run.addAction(action);
 		}
+	}
+
+	/**
+	 * This method gets called in Jenkins after a build.
+	 */
+	@Override
+	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
+			throws InterruptedException, IOException {
+
+		AbstractBuild<?, ?> build = this.getBuild(run);
+		archiveResults(run, workspace, build, listener, this.pathToResults);
 	}
 
 	public AbstractBuild<?, ?> getBuild(Run<?, ?> run) {
