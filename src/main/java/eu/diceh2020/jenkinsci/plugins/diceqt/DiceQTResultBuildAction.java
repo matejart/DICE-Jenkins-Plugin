@@ -28,6 +28,8 @@ package eu.diceh2020.jenkinsci.plugins.diceqt;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +38,7 @@ import org.kohsuke.stapler.StaplerProxy;
 
 import hudson.model.*;
 import hudson.util.StreamTaskListener;
+import jenkins.tasks.SimpleBuildStep;
 
 /**
  * This class stores the DICE Quality Testing results of a build. The main
@@ -49,10 +52,14 @@ import hudson.util.StreamTaskListener;
  * @author matej.artac@xlab.si
  *
  */
-public class DiceQTResultBuildAction implements Action, StaplerProxy {
+public class DiceQTResultBuildAction implements Action, StaplerProxy,
+		SimpleBuildStep.LastBuildAction {
 	
 	// Stores the build results
 	private Hashtable<String, Number> metrics = null;
+
+	// project actions for pipeline projects
+	private Collection<? extends Action> projectActions;
 
 	private final Run<?, ?> build;
 	private transient WeakReference<DiceQTBuildResult> diceQTResult;
@@ -70,6 +77,8 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 			Hashtable<String, Number> metrics) {
 		this.build = build;
 		this.metrics = Utilities.clone(metrics);
+
+		this.projectActions = new ArrayList<>();
 	}
 
 	/**
@@ -81,6 +90,11 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 			Hashtable<String, Number> metrics) {
 		this.build = build;
 		this.metrics = Utilities.clone(metrics);
+
+		ArrayList<DiceQTResultProjectAction> actions = new ArrayList<>();
+		actions.add(new DiceQTResultProjectAction(
+				build.getParent()));
+		this.projectActions = actions;
 	}
 	
 	public Run<?, ?> getBuild() {
@@ -124,7 +138,7 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 			if (result != null)
 				return result;
 		}
-		
+
 		try {
 			result = new DiceQTBuildResult(this,
 					StreamTaskListener.fromStdout());
@@ -140,5 +154,10 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	public void setDiceQTResultHistory(
 			WeakReference<DiceQTBuildResult> diceQTResultHistory) {
 		this.diceQTResult = diceQTResultHistory;
+	}
+
+	@Override
+	public Collection<? extends Action> getProjectActions() {
+		return this.projectActions;
 	}
 }

@@ -53,9 +53,22 @@ import hudson.util.RunList;
  */
 public class DiceQTResultProjectAction implements Action {
 
-	private final AbstractProject<?, ?> project;
+	private final Job<?, ?> project;
 
+
+	/**
+	 * Compatibility constructor. Prevents mockit from getting confused.
+	 * @param project
+	 */
 	DiceQTResultProjectAction(final AbstractProject<?, ?> project) {
+		this.project = project;
+	}
+
+	/**
+	 * Constructor
+	 * @param project
+	 */
+	DiceQTResultProjectAction(final Job<?, ?> project) {
 		this.project = project;
 	}
 	
@@ -77,9 +90,9 @@ public class DiceQTResultProjectAction implements Action {
 
 	/**
 	* Method necessary to get the side-panel included in the Jelly file
-	* @return this {@link AbstractProject}
+	* @return this {@link Job}
 	*/
-	public AbstractProject<?, ?> getProject() {
+	public Job<?, ?> getProject() {
 		return this.project;
 	}
 	

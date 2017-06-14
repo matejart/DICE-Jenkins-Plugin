@@ -93,11 +93,6 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		return BuildStepMonitor.NONE;
 	}
 	
-	@Override
-	public Action getProjectAction(AbstractProject<?, ?> project) {
-		return new DiceQTResultProjectAction(project);
-	}
-
 	public static void archiveResults(Run<?, ?> build, FilePath workspace,
 			TaskListener listener, String pathToResults)
 					throws InterruptedException, IOException {
