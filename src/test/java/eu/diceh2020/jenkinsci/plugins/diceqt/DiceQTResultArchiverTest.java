@@ -325,7 +325,7 @@ public class DiceQTResultArchiverTest {
 				MetricsJsonParser.parse(fileContent);
 		
 		DiceQTResultBuildAction action = new DiceQTResultBuildAction(
-				build, metrics);				
+				build, metrics);
 		
 		when(build.getResult()).thenReturn(result);
 		when(build.isBuilding()).thenReturn(building);
@@ -341,7 +341,6 @@ public class DiceQTResultArchiverTest {
 			throws Exception {
 		
 		DiceQTResultArchiver spy = spy(archiver);
-		doReturn(null).when(spy).getBuild(any(Run.class));
 		
 		return spy;
 	}

@@ -56,7 +56,7 @@ public class DiceQTBuildResult implements ModelObject {
 				LocalMessages.BUILD_RESULT_DISPLAY_NAME);
 	}
 
-	public AbstractBuild<?, ?> getBuild() {
+	public Run<?, ?> getBuild() {
 		return this.buildAction.getBuild();
 	}
 	

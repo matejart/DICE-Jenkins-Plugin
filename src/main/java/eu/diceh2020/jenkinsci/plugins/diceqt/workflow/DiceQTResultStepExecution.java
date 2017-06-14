@@ -1,5 +1,7 @@
 package eu.diceh2020.jenkinsci.plugins.diceqt.workflow;
 
+import java.io.PrintStream;
+
 import javax.inject.Inject;
 
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
@@ -11,6 +13,11 @@ import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 
+/**
+ * Implements the execution of the DICEQualityCheck.
+ * @author matej.artac@xlab.si
+ *
+ */
 public class DiceQTResultStepExecution extends AbstractSynchronousNonBlockingStepExecution<Void> {
 
 	@StepContextParameter
@@ -23,13 +30,17 @@ public class DiceQTResultStepExecution extends AbstractSynchronousNonBlockingSte
 	private transient Run<?, ?> build;
 
 	@Inject
-	private transient String pathToResults;
+	private transient DiceQTResultStep step;
 
 	@Override
 	protected Void run() throws Exception {
 
+		final String pathToResults = step.getPathToResults();
+		PrintStream logger = listener.getLogger();
+		logger.println(String.format("Hello from 'run'. pathToResults: %s",
+				pathToResults));
 		DiceQTResultArchiver.archiveResults(build, ws,
-				(AbstractBuild<?, ?>)build, listener, pathToResults);
+				listener, pathToResults);
 
 		return null;
 	}

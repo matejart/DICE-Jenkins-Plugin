@@ -98,18 +98,18 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		return new DiceQTResultProjectAction(project);
 	}
 
-	public static void archiveResults(Run<?, ?> run, FilePath workspace,
-			AbstractBuild<?, ?> build, TaskListener listener, String pathToResults)
+	public static void archiveResults(Run<?, ?> build, FilePath workspace,
+			TaskListener listener, String pathToResults)
 					throws InterruptedException, IOException {
 		PrintStream logger = listener.getLogger();
 		logger.println(String.format(
 				"Collecting the quality metrics data from %s.",
 				pathToResults));
-		if (run == null) {
+		if (build == null) {
 			logger.println("Run is null.");
 		} else {
 			logger.println(String.format("class: %s, build status usr: %s",
-					run.getClass().getName(), run.getBuildStatusUrl()));
+					build.getClass().getName(), build.getBuildStatusUrl()));
 		}
 
 		// compose a FilePath to point to results file: a combination
@@ -140,7 +140,7 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		}
 
 		// Save the results with the job
-		DiceQTResultBuildAction action = run.getAction(DiceQTResultBuildAction.class);
+		DiceQTResultBuildAction action = build.getAction(DiceQTResultBuildAction.class);
 		boolean appending;
 		if (action == null) {
 			action = new DiceQTResultBuildAction(build, metrics);
@@ -151,9 +151,9 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		}
 		
 		if (appending) {
-			run.save();
+			build.save();
 		} else {
-			run.addAction(action);
+			build.addAction(action);
 		}
 	}
 
@@ -164,12 +164,7 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 	public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)
 			throws InterruptedException, IOException {
 
-		AbstractBuild<?, ?> build = this.getBuild(run);
-		archiveResults(run, workspace, build, listener, this.pathToResults);
-	}
-
-	public AbstractBuild<?, ?> getBuild(Run<?, ?> run) {
-		return (AbstractBuild<?, ?>)run;
+		archiveResults(run, workspace, listener, this.pathToResults);
 	}
 
 	/**

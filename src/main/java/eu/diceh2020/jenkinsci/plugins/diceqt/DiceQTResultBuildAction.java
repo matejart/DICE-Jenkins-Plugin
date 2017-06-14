@@ -54,19 +54,36 @@ public class DiceQTResultBuildAction implements Action, StaplerProxy {
 	// Stores the build results
 	private Hashtable<String, Number> metrics = null;
 
-	private final AbstractBuild<?, ?> build;
+	private final Run<?, ?> build;
 	private transient WeakReference<DiceQTBuildResult> diceQTResult;
 	
 	private transient static final Logger logger = 
 			Logger.getLogger(DiceQTResultBuildAction.class.getName());
 
-	public DiceQTResultBuildAction(AbstractBuild<?, ?> build, 
+
+	/**
+	 * Compatibility constructor. Without it mockit gets lost.
+	 * @param build The build for the action
+	 * @param metrics Results from this build
+	 */
+	public DiceQTResultBuildAction(AbstractBuild<?, ?> build,
+			Hashtable<String, Number> metrics) {
+		this.build = build;
+		this.metrics = Utilities.clone(metrics);
+	}
+
+	/**
+	 * Constructor.
+	 * @param build The build for the action
+	 * @param metrics Results from this build
+	 */
+	public DiceQTResultBuildAction(Run<?, ?> build,
 			Hashtable<String, Number> metrics) {
 		this.build = build;
 		this.metrics = Utilities.clone(metrics);
 	}
 	
-	public AbstractBuild<?, ?> getBuild() {
+	public Run<?, ?> getBuild() {
 		return this.build;
 	}
 

@@ -9,6 +9,25 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import eu.diceh2020.jenkinsci.plugins.diceqt.LocalMessages;
 import hudson.Extension;
 
+/**
+ * This class implements the step that can be used in the {@code Jenkinsfile}.
+ * For example, use it in a post step of the pipeline:
+ * <pre>
+ * pipeline {
+ *     agent any
+ *     stages {
+ *         # ...
+ *     }
+ *     post {
+ *         success {
+ *             DICEQualityCheck(pathToResults: "output/result.json")
+ *         }
+ *     }
+ * }
+ * </pre>
+ * @author matej.artac@xlab.si
+ *
+ */
 public class DiceQTResultStep extends AbstractStepImpl {
 
 	/**
