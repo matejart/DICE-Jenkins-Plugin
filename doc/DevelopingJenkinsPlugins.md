@@ -85,6 +85,34 @@ the Action implementation.
 * If Jenkins complains from hell with "No page found 'sidepanel.jelly'", then
   the `it` parameter is probably `null`.
 
+## Jenkins Pipeline support
+
+Quick points about migration to the pipelines:
+
+* `AbstractBuild` does not work in this context, because workflow/pipeline
+  uses different classes that are descended from `Run`, the same class that
+  `AbstractBuild` extends.
+* If not needed otherwise, using `Run` instead of `AbstractBuild` actually
+  works just nicely.
+* A class extending `AbstractStepImpl` will define the step as it can be used
+  in the `Jenkinsfile` - the function name, the parameters.
+* A class extending `AbstractSynchronousNonBlockingStepExecution` (or any
+  of its peers that make sense) implement the actual execution of the step.
+  This can reuse the implementation of the previous plugin logic, but see
+  the note on the `AbstractBuild` and `Run`.
+* Project actions have a similar situation: using `AbstractProject` does not
+  work for `org.jenkinsci.plugins.workflow.job.WorkflowJob`. Using `Job` as
+  a replacement works just as well.
+* We need to remove `
+
+References:
+
+* [Pipeline plug-in development guide](https://github.com/jenkinsci/pipeline-plugin/blob/893e3484a25289c59567c6724f7ce19e3d23c6ee/DEVGUIDE.md)
+* Someone wrote a helpful [blogpost][pipeline blogpost] on migrating to
+pipelines.
+
+[pipeline blogpost]: https://jenkins.io/blog/2016/05/25/update-plugin-for-pipeline/
+
 ## Notes on using Eclipse
 
 The [getting started][Plugin tutorial 1] document provides a working solution
