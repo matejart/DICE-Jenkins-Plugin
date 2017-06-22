@@ -42,6 +42,7 @@ import hudson.model.*;
 import hudson.util.DataSetBuilder;
 import hudson.util.Graph;
 import hudson.util.RunList;
+import jenkins.model.RunAction2;
 
 /***
  * This class implements the view summarizing the whole project.
@@ -51,9 +52,9 @@ import hudson.util.RunList;
  * @author matej.artac@xlab.si
  *
  */
-public class DiceQTResultProjectAction implements Action {
+public class DiceQTResultProjectAction implements RunAction2 {
 
-	private final Job<?, ?> project;
+	private final transient Job<?, ?> project;
 
 
 	/**
@@ -228,5 +229,17 @@ public class DiceQTResultProjectAction implements Action {
 			
 			return chart;
 		}
+	}
+
+	@Override
+	public void onAttached(Run<?, ?> r) {
+		System.err.println("Project Action attached");
+		System.err.println(r);
+	}
+
+	@Override
+	public void onLoad(Run<?, ?> r) {
+		System.err.println("Project Action loaded");
+		System.err.println(r);
 	}
 }

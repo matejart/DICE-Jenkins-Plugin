@@ -150,6 +150,15 @@ public class DiceQTResultArchiver extends Recorder implements SimpleBuildStep {
 		} else {
 			build.addAction(action);
 		}
+
+		// Also save the project action;
+		DiceQTResultProjectAction projectAction = build.getAction(
+				DiceQTResultProjectAction.class);
+		if (projectAction == null) {
+			projectAction = new DiceQTResultProjectAction(
+					build.getParent());
+			build.addAction(projectAction);
+		}
 	}
 
 	/**
